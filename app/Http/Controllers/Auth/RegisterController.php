@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class RegisterController extends Controller
 {
@@ -75,6 +76,10 @@ class RegisterController extends Controller
 
     public function validateEmail(Request $request)
     {
+        if(Session::get('login_email') == $request->email) {
+            return 0;
+        }
+
         return User::where('email',$request->email)->count();
     }
 }

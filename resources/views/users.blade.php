@@ -19,8 +19,8 @@
                             @foreach ($users as $user)
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->name }}</td>
-                            <td></td>
-                            <td></td>
+                            <td>{{ $user->login_date }}</td>
+                            <td>{{ $user->status ? "Online" : "Offline"  }}</td>
                             @endforeach
                         </tr>
 

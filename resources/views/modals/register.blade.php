@@ -8,7 +8,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form id="register" method="POST" action="{{ route('register') }}">
+            <form id="register" method="POST" action="{{ route('postRegister') }}">
                 <div class="modal-body">
 
                     <div class="row">
@@ -31,12 +31,12 @@
                                     </div>
 
                                     <div class="form-group row">
-                                        <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
+                                        <label for="reg_email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 
                                         <div class="col-md-6">
-                                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                            <input id="reg_email" type="email" class="form-control @error('reg_email') is-invalid @enderror" name="reg_email" value="{{ old('reg_email') }}" required autocomplete="email">
 
-                                            @error('email')
+                                            @error('reg_email')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
@@ -52,7 +52,7 @@
                                             <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
 
                                             @error('password')
-                                                <span class="invalid-feedback" role="alert">
+                                                <span class="invalid-feedback" role="alert" id="password-error">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
@@ -84,8 +84,8 @@
 
                 </div>
                 <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Register</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btn-register" class="btn btn-primary">Register</button>
                 </div>
             </form>
         </div>
@@ -96,29 +96,39 @@
 <script>
     $( document ).ready(function() {
 
-
-        $('#email').on('blur', function(e) {
+        $('#reg_email').on('blur', function(e) {
             validateEmail(this)
         });
 
+        var msg = document.getElementById('password-error')
+        if (msg == null)
+        return
+
+        $('#exampleModal').modal().show()
     });
 
     function validateEmail(inputText)
     {
         var emailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if(inputText.value.match(emailFormat)) {
-            console.log($('#email').val())
+            console.log($('#reg_email').val())
             let route = `{{ route('validate.email') }}`
             let params = {
-                email: $('#email').val()
+                email: $('#reg_email').val()
             }
 
             axios.post(route, params)
             .then((response) => {
                 console.log(response.data)
-                if(response.data)
-                $('#error-email').text("The email has already been taken.");
-                $('#error-email').show();
+                if(response.data) {
+                    $('#error-email').text("The email has already been taken.");
+                    $('#error-email').show();
+                    $('#btn-register').attr('disabled', 'disabled');
+                } else {
+                    $('#error-email').text("");
+                    $('#error-email').hide();
+                    $('#btn-register').removeAttr('disabled');
+                }
             })
             return true;
         }
